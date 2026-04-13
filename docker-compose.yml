@@ -10,6 +10,11 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./migrations/001_init.up.sql:/docker-entrypoint-initdb.d/001_init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d taskflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   api:
     build: .
@@ -21,7 +26,8 @@ services:
       DB_CONNECTION_STR: postgresql://postgres:postgres@db:5432/taskflow?sslmode=disable
       JWT_SECRET: change-me-in-production
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   pgdata:

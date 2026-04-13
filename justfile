@@ -15,6 +15,10 @@ migrate:
         psql "{{db_url}}" -f "$f"; \
     done
 
+# Load seed data (test@example.com / password123)
+seed:
+    psql "{{db_url}}" -f migrations/seed.sql
+
 # Start the API server
 run:
     go run ./cmd/server
